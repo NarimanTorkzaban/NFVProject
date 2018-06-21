@@ -2854,19 +2854,26 @@ public static boolean comparePaths(Object o1, Object o2){
 private boolean placementTrustNF() {
 	 double[][] retres=new double[reqs.size()][1];
 	
-
 Set<Node> hs = new HashSet<>();
 Writer writer1=null;
 Writer writer=null;
 
 
-try {
+//try {
+	
 	String path = "results/trust_nf";
+	
 	String filename = "substrate1Level" +System.currentTimeMillis() + ".txt";
+	
+	
 	long name=System.currentTimeMillis();
-	writer = new BufferedWriter(new FileWriter(path+File.separator+filename));
+	//writer = new BufferedWriter(new FileWriter(path+File.separator+filename));
+	//System.out.println("Aliiiiiiiiive");
+	//System.exit(0);
 	String filename1 = "requests1Level" + + name +".txt";
-   writer1 = new BufferedWriter(new FileWriter(path+File.separator+filename1));
+	
+   //writer1 = new BufferedWriter(new FileWriter(path+File.separator+filename1));
+
 
 
 //SFCs (req)
@@ -2883,7 +2890,7 @@ for (Request req: reqs){
 	ArrayList<Node> subNodesList = (ArrayList<Node>) getNodes(substrateCopy.getGraph());
 	ArrayList<Link> subLinksList = (ArrayList<Link>) getLinks(substrateCopy.getGraph());
 	
-	writer.write("Request: " +req.getId()+ " \n");
+	//writer.write("Request: " +req.getId()+ " \n");
 	
 	int subNodesNum = subNodesList.size();			
 	double[] subNodes =  new double[subNodesNum];
@@ -2893,15 +2900,15 @@ for (Request req: reqs){
 	for (Node x: subNodesList){		
 		subNodes[x.getId()] = x.getAvailableCpu();
 		subNodeTypes[x.getId()] = x.getType();
-		writer.write("Node: " + x.getId() + " Type: " + x.getType() +" CPU: " + x.getAvailableCpu() + "\n");
+		//writer.write("Node: " + x.getId() + " Type: " + x.getType() +" CPU: " + x.getAvailableCpu() + "\n");
 	}
 	//Adjacency Matrix Substrate bw
 	double[][] subLinks = new double[subNodesNum][subNodesNum];
 	for (Link y: subLinksList){
 		Pair<Node> tmp = sub.getEndpoints(y);
 		subLinks[tmp.getFirst().getId()][tmp.getSecond().getId()]  = y.getBandwidth();
-		writer.write("Link " + y.getId()+ " : "+ tmp.getFirst().getId() + " -> " + tmp.getSecond().getId()+" BW: " +
-				y.getBandwidth()+"\n");
+		//writer.write("Link " + y.getId()+ " : "+ tmp.getFirst().getId() + " -> " + tmp.getSecond().getId()+" BW: " +
+		//		y.getBandwidth()+"\n");
 	}
 	//int subLinksNum = subNodesNum*subNodesNum;
 	
@@ -2927,7 +2934,7 @@ for (Request req: reqs){
 	int counter=0;
 
 	double proc_revenue=0;
-	writer1.write("Request: " +req.getId()+ " \n");
+	//writer1.write("Request: " +req.getId()+ " \n");
 	
 	ArrayList<Node> req_n = (ArrayList<Node>) getNodes(req.getGraph());
 	for (Node node: req_n){
@@ -2935,7 +2942,7 @@ for (Request req: reqs){
 		proc_revenue += node.getAvailableCpu();
 		sfcNodeTypes[node.getId()]=node.getType();
 		sfcNodeFunctions[node.getId()]=node.getName();
-		writer1.write("Node: " + node.getId() + " Type: " + node.getType() +" CPU: " + node.getAvailableCpu()+"\n");
+		//writer1.write("Node: " + node.getId() + " Type: " + node.getType() +" CPU: " + node.getAvailableCpu()+"\n");
 	}
 	
 
@@ -2946,8 +2953,8 @@ for (Request req: reqs){
 	for (Link y: links){
 	Pair<Node> tmp = req.getGraph().getEndpoints(y);
 	sfcLinks[tmp.getFirst().getId()][tmp.getSecond().getId()]  = y.getBandwidth();
-	writer1.write("Link " + y.getId()+ " : "+  y.getId()+ " : "+  tmp.getFirst().getId() + " -> " + tmp.getSecond().getId()+" BW: " +
-			 y.getBandwidth()+"\n");
+//	writer1.write("Link " + y.getId()+ " : "+  y.getId()+ " : "+  tmp.getFirst().getId() + " -> " + tmp.getSecond().getId()+" BW: " +
+//			 y.getBandwidth()+"\n");
 	bw_revenue+=y.getBandwidth();
 	}
 	
@@ -2976,27 +2983,57 @@ for (Request req: reqs){
 		for(int j=0; j<sfcLinks.length;j++)
 			sumDemands += sfcLinks[i][j];
 
-try {
-	ProblemVirtualization instance = new ProblemVirtualization();
-	instance.SEdge = SEdge;
-	instance.REdge = REdge;
-	instance.demand = sfcLinks;
-	instance.c = subLinks;
-	instance.g= sfcNodes;
-	instance.r = subNodes;
-	instance.numS= subNodesNum;
-	instance.numR= numNodesSFC;
-	instance.trust = trust;
-	instance.thresh = req.getTrustThr();
-	instance.redgeSize = getCount(REdge);
-	instance.sedgeSize = getCount(SEdge);
-	instance.sumDemand = sumDemands;
+	int[] problem_vars = new int[4];
+
 	
+	//System.exit(0);
+try {
+	
+//Problem is that I need to give the super values to that before I get an instance, in other
+	//words, the instance super  should be defined with the corresponding values not with zero.
+	ProblemVirtualization instance = new ProblemVirtualization();
+	
+	problem_vars[0] = (numNodesSFC*subNodesNum + numNodesSFC*subNodesNum*numNodesSFC*subNodesNum);
+	problem_vars[1] =numNodesSFC +1 +getCount(REdge)*subNodesNum +getCount(SEdge) + subNodesNum;
+	int countInd=0; 
+	for(int i=0; i<numNodesSFC; i++)
+		for(int j=0; j<numNodesSFC; j++)
+			if(REdge[i][j]!=0)
+				for(int u=0; u<subNodesNum;u++) {
+					for(int v=0; v<subNodesNum;v++) {
+						if(SEdge[u][v]!=0) 
+							countInd++;
+						if(SEdge[v][u]!=0) 
+							countInd++;
+					}
+					
+					countInd+=2;
+				}
+	problem_vars[2] = numNodesSFC*subNodesNum +numNodesSFC*subNodesNum +countInd + numNodesSFC*subNodesNum +getCount(REdge)*getCount(SEdge); 
+	problem_vars[3] = numNodesSFC*subNodesNum;
+	
+	instance.setProbVars(problem_vars);
+	instance.setSubMatrix(SEdge); 
+	instance.setReqMatrix(REdge);
+	instance.setBWDemand(sfcLinks);
+	instance.setSubBW(subLinks);
+	instance.setCPUDemand(sfcNodes);
+	instance.setSubCPU(subNodes);
+	instance.setNumS(subNodesNum);
+	instance.setNumR(numNodesSFC);
+	instance.setTrust(trust);
+	instance.setThresh(req.getTrustThr());
+	instance.setRedgeSize(getCount(REdge));
+	instance.setSedgeSize(getCount(SEdge));
+	instance.setSum(sumDemands);
+	
+
 	System.out.println(new String(new char[50]).replace("\0", "="));
     System.out.println("Solving "+ProblemVirtualization.class.getSimpleName());
 
     //KTRIProblem instance = generateInstance(ProblemVirtualization.class);
 
+   // System.exit(0);
     // Create a new solver
     KTRISolver solver;
     solver = new KTRSolver(instance);
@@ -3014,7 +3051,8 @@ try {
 	long solveEndTime = System.nanoTime();
 	long solveTime = solveEndTime - solveStartTime;
 	System.out.println("result" + result);
-	
+	 
+	//System.exit(0);
 	req.print();
 	if (result==0) {
 		
@@ -3111,8 +3149,8 @@ try {
 		        // TODO Auto-generated catch block
 		        e.printStackTrace();
 		    }
-			writer1.write("Node Mapping: "+ nodeMap+ "\n");
-			writer1.write("Link Mapping: "+ lmap+ "\n");
+			//writer1.write("Node Mapping: "+ nodeMap+ "\n");
+			//writer1.write("Link Mapping: "+ lmap+ "\n");
 			
 		}else{
 			System.out.println("Did not find an answer for Mapping");
@@ -3123,6 +3161,7 @@ try {
 		
 	} catch (Exception e) {
 		System.err.println("Knitro exception caught: " + e);
+		System.exit(0);
 	}
 	
 		
@@ -3130,12 +3169,12 @@ try {
 	
 	
 	
-	 } catch (IOException ex) {
-		  // report
-		} finally {
-		   try {writer.close(); writer1.close();} catch (Exception ex) {/*ignore*/}
-		}
-	
+//	 } catch (IOException ex) {
+//		  // report
+//		} finally {
+//		   try {writer.close(); writer1.close();} catch (Exception ex) {/*ignore*/}
+//		}
+//	
 	return true;
 }
 

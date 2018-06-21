@@ -236,6 +236,7 @@ public class MainNariman{
       			if (startingRequests.size()>0){
       				//System.out.println("startingRequests: " +startingRequests.size());
       				boolean ret = algorithm.runAlgorithm();    
+      				//System.exit(0);
       				if (!ret)
       					throw new Exception("Algorithm error");
 
@@ -306,7 +307,7 @@ public class MainNariman{
 		    {
 		      e.printStackTrace();
 		    }
-  			
+  			//System.exit(0);
 
   			return results;
 

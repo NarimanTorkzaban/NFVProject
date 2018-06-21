@@ -11,28 +11,29 @@ import com.artelys.knitro.api.KTRProblem;
 
 public class ProblemVirtualization extends KTRProblem {
 	
-	public int[][] SEdge;
-	public int[][] REdge;
-	public double[][] demand;
-	public double[][] c;
-	public double[] g;
-	public double[] r;
-	public int numS;
-	public int numR;
-	public int redgeSize, sedgeSize;
-	public double thresh;
-	public double[] trust;
-	public double sumDemand;
-
+	private int[][] SEdge;
+	private int[][] REdge;
+	private double[][] demand;
+	private double[][] c;
+	private double[] g;
+	private double[] r;
+	private int numS;
+	private int numR;
+	private int redgeSize, sedgeSize;
+	private double thresh;
+	private double[] trust;
+	private double sumDemand;
+	private static int[] problem_vars = new int[4];
+	
 	
 	static int val1 =240;
 	static int val2=39;
 	static int val3 =205;
 	static int val4=15;
-	static int[]  prob_vars = initProbVariabes();
+//	static int[]  prob_vars = initProbVariabes();
     public ProblemVirtualization() {
     	
-    	super(prob_vars[0],prob_vars[1],prob_vars[2],prob_vars[3]);
+    	super(problem_vars[0],problem_vars[1],problem_vars[2],problem_vars[3]);
       //  super(240, 39, 205, 15);
         setObjectiveProperties();
         setVariableProperties();
@@ -398,6 +399,52 @@ public class ProblemVirtualization extends KTRProblem {
     	return 0;
     }
     
+    
+    public void setSubMatrix(int[][] matrix){
+    	this.SEdge = matrix;
+    }  
+    public void setReqMatrix(int[][] matrix){
+    	this.REdge = matrix;
+    }
+    public void setBWDemand(double[][] matrix){
+    	this.demand = matrix;
+    }
+    public void setSubBW(double[][] matrix){
+    	this.c = matrix;
+    }
+    public void setCPUDemand(double[] matrix){
+    	this.g = matrix;
+    }
+    public void setSubCPU(double[] matrix){
+    	this.r = matrix;
+    }	
+    public void setNumS(int num){
+    	this.numS = num;
+    }
+    public void setNumR(int num){
+    	this.numR = num;
+    }
+    public void setTrust(double[] matrix){
+    	this.trust = matrix;
+    }	
+    public void setThresh(double num){
+    	this.thresh = num;
+    }
+    public void setRedgeSize(int num){
+    	this.redgeSize = num;
+    }
+    public void setSedgeSize(int num){
+    	this.sedgeSize = num;
+    }
+    public void setSum(double num){
+    	this.sumDemand = num;
+    }
+
+    
+    
+    
+    
+    //This function wont be used.
 	int[] findSuperVals() {
 		int[] superVals = new int[4];
 		superVals[0] = (numR*numS + numR*numS*numR*numS);
@@ -425,7 +472,14 @@ public class ProblemVirtualization extends KTRProblem {
     	System.out.println(7*5 + 35*35);
 		return superVals;
 	}
+	
+	public void setProbVars(int[] vars) {
+		
+		this.problem_vars = vars;
+		
+	}
 
+	//This function wont be used.
     static int[]  initProbVariabes(){
     	
     	
