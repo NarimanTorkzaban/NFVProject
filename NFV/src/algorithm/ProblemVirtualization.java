@@ -11,6 +11,7 @@ import com.artelys.knitro.api.KTRProblem;
 
 public class ProblemVirtualization extends KTRProblem {
 	
+	
 	private int[][] SEdge;
 	private int[][] REdge;
 	private double[][] demand;
@@ -31,10 +32,13 @@ public class ProblemVirtualization extends KTRProblem {
 	static int val3 =205;
 	static int val4=15;
 //	static int[]  prob_vars = initProbVariabes();
-    public ProblemVirtualization() {
+    public ProblemVirtualization(int [] vars, int[][] SEdge, int[][] REdge, double[][]demand, double[][]C, 
+    		double[]G, double[]R, int numS, int numR, double[]trust, double thresh, double sum) {
     	
-    	super(problem_vars[0],problem_vars[1],problem_vars[2],problem_vars[3]);
-      //  super(240, 39, 205, 15);
+    	super(vars[0],vars[1],vars[2],vars[3]);
+    	this.SEdge = SEdge; this.REdge = REdge; this.demand = demand; this.c = C;
+        this.g = G; this.r = R; this.numS= numS; this.numR = numR; this.trust = trust;
+        this.thresh = thresh; this.sumDemand = sum;
         setObjectiveProperties();
         setVariableProperties();
         setConstraintProperties();

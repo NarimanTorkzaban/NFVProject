@@ -2984,15 +2984,6 @@ for (Request req: reqs){
 			sumDemands += sfcLinks[i][j];
 
 	int[] problem_vars = new int[4];
-
-	
-	//System.exit(0);
-try {
-	
-//Problem is that I need to give the super values to that before I get an instance, in other
-	//words, the instance super  should be defined with the corresponding values not with zero.
-	ProblemVirtualization instance = new ProblemVirtualization();
-	
 	problem_vars[0] = (numNodesSFC*subNodesNum + numNodesSFC*subNodesNum*numNodesSFC*subNodesNum);
 	problem_vars[1] =numNodesSFC +1 +getCount(REdge)*subNodesNum +getCount(SEdge) + subNodesNum;
 	int countInd=0; 
@@ -3011,6 +3002,16 @@ try {
 				}
 	problem_vars[2] = numNodesSFC*subNodesNum +numNodesSFC*subNodesNum +countInd + numNodesSFC*subNodesNum +getCount(REdge)*getCount(SEdge); 
 	problem_vars[3] = numNodesSFC*subNodesNum;
+	
+	
+	//System.exit(0);
+try {
+	
+//Problem is that I need to give the super values to that before I get an instance, in other
+	//words, the instance super  should be defined with the corresponding values not with zero.
+	ProblemVirtualization instance = new ProblemVirtualization(problem_vars, SEdge, REdge, sfcLinks, subLinks, sfcNodes, 
+			subNodes, subNodesNum, numNodesSFC, trust, req.getTrustThr(), sumDemands);
+	
 	
 	instance.setProbVars(problem_vars);
 	instance.setSubMatrix(SEdge); 
